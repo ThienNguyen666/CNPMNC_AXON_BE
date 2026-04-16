@@ -7,6 +7,7 @@ import asset.project.entity.AuditLog;
 import asset.project.entity.User;
 import asset.project.enums.AuditAction;
 import asset.project.repository.AuditLogRepository;
+import asset.project.repository.AuditLogSpec;
 import asset.project.service.AuditLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -26,9 +27,8 @@ public class AuditLogServiceImpl implements AuditLogService {
     @Override
     public PageRes<AuditLogRes> getAll(AuditAction action, UUID assetId, UUID performedById,
                                         OffsetDateTime from, OffsetDateTime to, Pageable pageable) {
-        return PageRes.from(
-                auditLogRepository.findAllFiltered(action, assetId, performedById, from, to, pageable)
-                        .map(this::toRes));
+        var spec = AuditLogSpec.build(action, assetId, performedById, from, to);
+        return PageRes.from(auditLogRepository.findAll(spec, pageable).map(this::toRes));
     }
 
     @Override
