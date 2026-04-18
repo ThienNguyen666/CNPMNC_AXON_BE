@@ -130,7 +130,18 @@ class AuthServiceImplTest {
         String invalidToken = "invalid-token";
         when(jwtUtils.isTokenValid(invalidToken)).thenReturn(false);
 
-        assertThrows(BusinessException.class, () -> authService.refreshToken(invalidToken));
+        BusinessException ex = assertThrows(BusinessException.class, () -> authService.refreshToken(invalidToken));
+        assertEquals("Invalid or expired refresh token", ex.getMessage());
+    }
+
+    @Test
+    void refreshToken_ShouldThrowBusinessException_WhenTokenIsExpired() {
+        String expiredToken = "expired-token";
+        // In our implementation, isTokenValid returns false for expired tokens
+        when(jwtUtils.isTokenValid(expiredToken)).thenReturn(false);
+
+        BusinessException ex = assertThrows(BusinessException.class, () -> authService.refreshToken(expiredToken));
+        assertEquals("Invalid or expired refresh token", ex.getMessage());
     }
 
     @Test
